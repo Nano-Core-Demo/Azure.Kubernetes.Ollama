@@ -55,14 +55,14 @@ jobs:
           helm repo update;
 
           Get-Content .kubernetes/ollama-values.yaml | foreach { [Environment]::ExpandEnvironmentVariables($_) } | Set-Content .kubernetes/ollama-values.tmp.yaml;
-          helm upgrade $env:APP_NAME otwld/ollama --install --namespace $env:KUBERNETES_NAMESPACE --version $env:CHART_VERSION -f ollama-values.tmp.yaml --set-json "ollama.models.pull=${OLLAMA_PULL_MODELS}" --set-json "ollama.models.run=${OLLAMA_RUN_MODELS}";
+          helm upgrade $env:APP_NAME otwld/ollama --install --namespace $env:KUBERNETES_NAMESPACE --version $env:CHART_VERSION -f .kubernetes/ollama-values.tmp.yaml --set-json "ollama.models.pull=${OLLAMA_PULL_MODELS}" --set-json "ollama.models.run=${OLLAMA_RUN_MODELS}";
           if ($LastExitCode -ne 0) 
           { 
               throw "error";
           }
     
           Get-Content .kubernetes/ollama-service-monitor.yaml | foreach { [Environment]::ExpandEnvironmentVariables($_) } | Set-Content .kubernetes/ollama-service-monitor.tmp.yaml;
-          kubectl apply -f ollama-service-monitor.tmp.yaml;
+          kubectl apply -f .kubernetes/ollama-service-monitor.tmp.yaml;
           if ($LastExitCode -ne 0) 
           { 
               throw "error";
